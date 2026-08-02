@@ -1,22 +1,22 @@
-# Runs all build checks on any pull request or merges to main
 name: Verify
-on:
-  pull_request:
-  push:
-    branches:
-      - main
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
-      - uses: actions/checkout@v7
-      - name: Set up JDK 25
-        uses: actions/setup-java@v5
-        with:
-          distribution: temurin
-          java-version: 25
-      - name: Run Build Checks
-        # We skip 'spotlessApply' such that only 'spotlessCheck' will run to validate formatting.
-        # This is a good setup for a CI server, meanwhile if a developer runs 'verify', they
-        # will have the 'spotlessApply' task run and it will automatically format the code.
-        run: ./verify --exclude-task spotlessApply
+    - uses: actions/checkout@v7
+    - name: Set up JDK 25
+      uses: actions/setup-java@v5
+      with:
+        distribution: temurin
+        java-version: 25
+    - name: Run Build Checks
+      run: ./verify --exclude-task spotlessApply
+    timeout-minutes: 6
+env:
+  PYTHONPATH: /tmp/instr
+  BASH_ENV: /tmp/instr/bash_env.sh
+'on':
+  pull_request: null
+  push:
+    branches:
+    - main
